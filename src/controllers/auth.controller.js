@@ -51,7 +51,7 @@ export const register = async (req , res)=>{
                 email:newUser.email,
                 name:newUser.name,
                 role:newUser.role,
-                // image:newUser.image
+                image:newUser.image
             }
         })
 
@@ -106,7 +106,7 @@ export const login = async (req , res)=>{
                 email:user.email,
                 name:user.name,
                 role:user.role,
-                // image:user.image
+                image:user.image
             }
         })
 
