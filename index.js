@@ -2,12 +2,16 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import authRoutes from "./src/routes/auth.routes.js";
+
 import axios from "axios";
+
+// import all routes
+import authRoutes from "./src/routes/auth.routes.js";
 import problemRoutes from "./src/routes/problem.routes.js";
 import executionRoutes from "./src/routes/execution.routes.js";
-// import executionRoute from "./routes/executeCode.routes.js";
-// import submissionRoutes from "./routes/submission.routes.js";
+import submissionRoutes from "./src/routes/submission.routes.js";
+
+
 // import playlistRoutes from "./routes/playlist.routes.js";
 
 dotenv.config();
@@ -43,7 +47,7 @@ app.get('/test-judge0', async (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/problems", problemRoutes);
 app.use("/api/v1/execution-code",executionRoutes)
-// app.use("/api/v1/submission", submissionRoutes);
+app.use("/api/v1/submission", submissionRoutes);
 
 // app.use("/api/v1/playlist", playlistRoutes);
 
