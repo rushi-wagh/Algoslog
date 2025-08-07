@@ -231,3 +231,26 @@ export const getAllProblems = asyncHandler(async (req, res) => {
 
     res.status(200).json(new ApiResponse(200,problems,"All problems fetched succesfully"));
 });
+export const getAllProblemsSolvedByUser = asyncHandler(async(req,res) => {
+  const userId = req.user.id
+  const problems = await db.problem.findMany({
+    where:{
+      solvedBy:{
+        some:{
+          userId
+        }
+      }
+    },
+    include:{
+      solvedBy:{
+        where:{
+        userId
+        }
+      }
+    }
+  })
+  if(!problems){
+    throw new ApiError(404,"No problem solved by user")
+  }
+  return res.status(200).json(new ApiResponse(200,problems,"All problems solved by user fetched"))
+})

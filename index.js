@@ -10,9 +10,10 @@ import authRoutes from "./src/routes/auth.routes.js";
 import problemRoutes from "./src/routes/problem.routes.js";
 import executionRoutes from "./src/routes/execution.routes.js";
 import submissionRoutes from "./src/routes/submission.routes.js";
+import playlistRoutes from "./src/routes/playlist.routes.js";
 
 
-// import playlistRoutes from "./routes/playlist.routes.js";
+
 
 dotenv.config();
 
@@ -48,8 +49,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/problems", problemRoutes);
 app.use("/api/v1/execution-code",executionRoutes)
 app.use("/api/v1/submission", submissionRoutes);
-
-// app.use("/api/v1/playlist", playlistRoutes);
+app.use("/api/v1/playlist", playlistRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
