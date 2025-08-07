@@ -98,13 +98,25 @@ export const deletePlayList = asyncHandler(async (req, res) => {
   if (!playlistId) {
     throw new ApiError(401, "No id provided");
   }
+  const existingPlaylist = await db.playlist.findUnique({
+    where: {
+      id: playlistId,
+    },
+  });
+
+  if (!existingPlaylist) {
+    throw new ApiError(404, "Playlist not found");
+  }
+
   const deletedPlaylist = await db.playlist.delete({
     where: {
       id: playlistId,
     },
   });
 
-  return res.status(200, deletePlayList, "playlist deleted succesfully");
+  return res.status(200).json(
+    new ApiResponse(200,deletedPlaylist,"Playlist deleted")
+  )
 });
 export const removeProblemFromPlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
