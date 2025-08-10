@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import {axiosInstance} from "../lib/axios";
+import toast, { Toaster } from 'react-hot-toast';
 
 const useAuthStore = create((set) => ({
   authUser: null,
@@ -9,7 +11,7 @@ const useAuthStore = create((set) => ({
   checkAuth: async () => {
     set({ isCheckingAuth: true });
     try {
-      const res = await axiosInstance.get("/auth/check");
+      const res = await axiosInstance.get("/auth/profile");
       console.log("checkauth response", res.data);
 
       set({ authUser: res.data.user });

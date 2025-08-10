@@ -47,6 +47,7 @@ const App = () => {
           path="/signup"
           element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />}
         />
+        
 
         <Route
           path="/problem/:id"
