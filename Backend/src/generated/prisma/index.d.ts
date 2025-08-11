@@ -69,14 +69,6 @@ export const Difficulty: {
 
 export type Difficulty = (typeof Difficulty)[keyof typeof Difficulty]
 
-
-export const status: {
-  Accepted: 'Accepted',
-  WrongAnswer: 'WrongAnswer'
-};
-
-export type status = (typeof status)[keyof typeof status]
-
 }
 
 export type UserRole = $Enums.UserRole
@@ -86,10 +78,6 @@ export const UserRole: typeof $Enums.UserRole
 export type Difficulty = $Enums.Difficulty
 
 export const Difficulty: typeof $Enums.Difficulty
-
-export type status = $Enums.status
-
-export const status: typeof $Enums.status
 
 /**
  * ##  Prisma Client ʲˢ
@@ -107,7 +95,7 @@ export const status: typeof $Enums.status
  */
 export class PrismaClient<
   ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
-  U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
+  const U = 'log' extends keyof ClientOptions ? ClientOptions['log'] extends Array<Prisma.LogLevel | Prisma.LogDefinition> ? Prisma.GetEvents<ClientOptions['log']> : never : never,
   ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
@@ -343,8 +331,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.12.0
-   * Query Engine version: 8047c96bbd92db98a2abc7c9323ce77c02c89dbc
+   * Prisma Client JS version: 6.13.0
+   * Query Engine version: 361e86d0ea4987e9f53a565309b3eed797a6bcbd
    */
   export type PrismaVersion = {
     client: string
@@ -1315,16 +1303,24 @@ export namespace Prisma {
     /**
      * @example
      * ```
-     * // Defaults to stdout
+     * // Shorthand for `emit: 'stdout'`
      * log: ['query', 'info', 'warn', 'error']
      * 
-     * // Emit as events
+     * // Emit as events only
      * log: [
-     *   { emit: 'stdout', level: 'query' },
-     *   { emit: 'stdout', level: 'info' },
-     *   { emit: 'stdout', level: 'warn' }
-     *   { emit: 'stdout', level: 'error' }
+     *   { emit: 'event', level: 'query' },
+     *   { emit: 'event', level: 'info' },
+     *   { emit: 'event', level: 'warn' }
+     *   { emit: 'event', level: 'error' }
      * ]
+     * 
+     * / Emit as events and log to stdout
+     * og: [
+     *  { emit: 'stdout', level: 'query' },
+     *  { emit: 'stdout', level: 'info' },
+     *  { emit: 'stdout', level: 'warn' }
+     *  { emit: 'stdout', level: 'error' }
+     * 
      * ```
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
@@ -1372,10 +1368,15 @@ export namespace Prisma {
     emit: 'stdout' | 'event'
   }
 
-  export type GetLogType<T extends LogLevel | LogDefinition> = T extends LogDefinition ? T['emit'] extends 'event' ? T['level'] : never : never
-  export type GetEvents<T extends any> = T extends Array<LogLevel | LogDefinition> ?
-    GetLogType<T[0]> | GetLogType<T[1]> | GetLogType<T[2]> | GetLogType<T[3]>
-    : never
+  export type CheckIsLogLevel<T> = T extends LogLevel ? T : never;
+
+  export type GetLogType<T> = CheckIsLogLevel<
+    T extends LogDefinition ? T['level'] : T
+  >;
+
+  export type GetEvents<T extends any[]> = T extends Array<LogLevel | LogDefinition>
+    ? GetLogType<T[number]>
+    : never;
 
   export type QueryEvent = {
     timestamp: Date
@@ -1642,7 +1643,6 @@ export namespace Prisma {
     image: string | null
     role: $Enums.UserRole | null
     password: string | null
-    isEmailVerified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1654,7 +1654,6 @@ export namespace Prisma {
     image: string | null
     role: $Enums.UserRole | null
     password: string | null
-    isEmailVerified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1666,7 +1665,6 @@ export namespace Prisma {
     image: number
     role: number
     password: number
-    isEmailVerified: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1680,7 +1678,6 @@ export namespace Prisma {
     image?: true
     role?: true
     password?: true
-    isEmailVerified?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1692,7 +1689,6 @@ export namespace Prisma {
     image?: true
     role?: true
     password?: true
-    isEmailVerified?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1704,7 +1700,6 @@ export namespace Prisma {
     image?: true
     role?: true
     password?: true
-    isEmailVerified?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1789,7 +1784,6 @@ export namespace Prisma {
     image: string | null
     role: $Enums.UserRole
     password: string
-    isEmailVerified: boolean
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1818,7 +1812,6 @@ export namespace Prisma {
     image?: boolean
     role?: boolean
     password?: boolean
-    isEmailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     problems?: boolean | User$problemsArgs<ExtArgs>
@@ -1835,7 +1828,6 @@ export namespace Prisma {
     image?: boolean
     role?: boolean
     password?: boolean
-    isEmailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1847,7 +1839,6 @@ export namespace Prisma {
     image?: boolean
     role?: boolean
     password?: boolean
-    isEmailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1859,12 +1850,11 @@ export namespace Prisma {
     image?: boolean
     role?: boolean
     password?: boolean
-    isEmailVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "image" | "role" | "password" | "isEmailVerified" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "image" | "role" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     problems?: boolean | User$problemsArgs<ExtArgs>
     submission?: boolean | User$submissionArgs<ExtArgs>
@@ -1890,7 +1880,6 @@ export namespace Prisma {
       image: string | null
       role: $Enums.UserRole
       password: string
-      isEmailVerified: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2326,7 +2315,6 @@ export namespace Prisma {
     readonly image: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
     readonly password: FieldRef<"User", 'String'>
-    readonly isEmailVerified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -2878,9 +2866,9 @@ export namespace Prisma {
     constraints: number
     hints: number
     editorial: number
-    testCases: number
-    codeSnippet: number
-    referenceSolution: number
+    testcases: number
+    codeSnippets: number
+    referenceSolutions: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2924,9 +2912,9 @@ export namespace Prisma {
     constraints?: true
     hints?: true
     editorial?: true
-    testCases?: true
-    codeSnippet?: true
-    referenceSolution?: true
+    testcases?: true
+    codeSnippets?: true
+    referenceSolutions?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3015,9 +3003,9 @@ export namespace Prisma {
     constraints: string
     hints: string | null
     editorial: string | null
-    testCases: JsonValue
-    codeSnippet: JsonValue
-    referenceSolution: JsonValue
+    testcases: JsonValue
+    codeSnippets: JsonValue
+    referenceSolutions: JsonValue
     createdAt: Date
     updatedAt: Date
     _count: ProblemCountAggregateOutputType | null
@@ -3050,9 +3038,9 @@ export namespace Prisma {
     constraints?: boolean
     hints?: boolean
     editorial?: boolean
-    testCases?: boolean
-    codeSnippet?: boolean
-    referenceSolution?: boolean
+    testcases?: boolean
+    codeSnippets?: boolean
+    referenceSolutions?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3073,9 +3061,9 @@ export namespace Prisma {
     constraints?: boolean
     hints?: boolean
     editorial?: boolean
-    testCases?: boolean
-    codeSnippet?: boolean
-    referenceSolution?: boolean
+    testcases?: boolean
+    codeSnippets?: boolean
+    referenceSolutions?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3092,9 +3080,9 @@ export namespace Prisma {
     constraints?: boolean
     hints?: boolean
     editorial?: boolean
-    testCases?: boolean
-    codeSnippet?: boolean
-    referenceSolution?: boolean
+    testcases?: boolean
+    codeSnippets?: boolean
+    referenceSolutions?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3111,14 +3099,14 @@ export namespace Prisma {
     constraints?: boolean
     hints?: boolean
     editorial?: boolean
-    testCases?: boolean
-    codeSnippet?: boolean
-    referenceSolution?: boolean
+    testcases?: boolean
+    codeSnippets?: boolean
+    referenceSolutions?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProblemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "difficulty" | "tags" | "userId" | "examples" | "constraints" | "hints" | "editorial" | "testCases" | "codeSnippet" | "referenceSolution" | "createdAt" | "updatedAt", ExtArgs["result"]["problem"]>
+  export type ProblemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "difficulty" | "tags" | "userId" | "examples" | "constraints" | "hints" | "editorial" | "testcases" | "codeSnippets" | "referenceSolutions" | "createdAt" | "updatedAt", ExtArgs["result"]["problem"]>
   export type ProblemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     submission?: boolean | Problem$submissionArgs<ExtArgs>
@@ -3152,9 +3140,9 @@ export namespace Prisma {
       constraints: string
       hints: string | null
       editorial: string | null
-      testCases: Prisma.JsonValue
-      codeSnippet: Prisma.JsonValue
-      referenceSolution: Prisma.JsonValue
+      testcases: Prisma.JsonValue
+      codeSnippets: Prisma.JsonValue
+      referenceSolutions: Prisma.JsonValue
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["problem"]>
@@ -3594,9 +3582,9 @@ export namespace Prisma {
     readonly constraints: FieldRef<"Problem", 'String'>
     readonly hints: FieldRef<"Problem", 'String'>
     readonly editorial: FieldRef<"Problem", 'String'>
-    readonly testCases: FieldRef<"Problem", 'Json'>
-    readonly codeSnippet: FieldRef<"Problem", 'Json'>
-    readonly referenceSolution: FieldRef<"Problem", 'Json'>
+    readonly testcases: FieldRef<"Problem", 'Json'>
+    readonly codeSnippets: FieldRef<"Problem", 'Json'>
+    readonly referenceSolutions: FieldRef<"Problem", 'Json'>
     readonly createdAt: FieldRef<"Problem", 'DateTime'>
     readonly updatedAt: FieldRef<"Problem", 'DateTime'>
   }
@@ -4104,7 +4092,7 @@ export namespace Prisma {
     stdout: string | null
     stderr: string | null
     compileOutput: string | null
-    status: $Enums.status | null
+    status: string | null
     memory: string | null
     time: string | null
     createdAt: Date | null
@@ -4120,7 +4108,7 @@ export namespace Prisma {
     stdout: string | null
     stderr: string | null
     compileOutput: string | null
-    status: $Enums.status | null
+    status: string | null
     memory: string | null
     time: string | null
     createdAt: Date | null
@@ -4278,7 +4266,7 @@ export namespace Prisma {
     stdout: string | null
     stderr: string | null
     compileOutput: string | null
-    status: $Enums.status
+    status: string
     memory: string | null
     time: string | null
     createdAt: Date
@@ -4411,7 +4399,7 @@ export namespace Prisma {
       stdout: string | null
       stderr: string | null
       compileOutput: string | null
-      status: $Enums.status
+      status: string
       memory: string | null
       time: string | null
       createdAt: Date
@@ -4851,7 +4839,7 @@ export namespace Prisma {
     readonly stdout: FieldRef<"Submission", 'String'>
     readonly stderr: FieldRef<"Submission", 'String'>
     readonly compileOutput: FieldRef<"Submission", 'String'>
-    readonly status: FieldRef<"Submission", 'status'>
+    readonly status: FieldRef<"Submission", 'String'>
     readonly memory: FieldRef<"Submission", 'String'>
     readonly time: FieldRef<"Submission", 'String'>
     readonly createdAt: FieldRef<"Submission", 'DateTime'>
@@ -5323,7 +5311,7 @@ export namespace Prisma {
     expected: string | null
     stderr: string | null
     compileOutput: string | null
-    status: $Enums.status | null
+    status: string | null
     memory: string | null
     time: string | null
     createdAt: Date | null
@@ -5339,7 +5327,7 @@ export namespace Prisma {
     expected: string | null
     stderr: string | null
     compileOutput: string | null
-    status: $Enums.status | null
+    status: string | null
     memory: string | null
     time: string | null
     createdAt: Date | null
@@ -5516,7 +5504,7 @@ export namespace Prisma {
     expected: string
     stderr: string | null
     compileOutput: string | null
-    status: $Enums.status
+    status: string
     memory: string | null
     time: string | null
     createdAt: Date
@@ -5634,7 +5622,7 @@ export namespace Prisma {
       expected: string
       stderr: string | null
       compileOutput: string | null
-      status: $Enums.status
+      status: string
       memory: string | null
       time: string | null
       createdAt: Date
@@ -6071,7 +6059,7 @@ export namespace Prisma {
     readonly expected: FieldRef<"TestCaseResult", 'String'>
     readonly stderr: FieldRef<"TestCaseResult", 'String'>
     readonly compileOutput: FieldRef<"TestCaseResult", 'String'>
-    readonly status: FieldRef<"TestCaseResult", 'status'>
+    readonly status: FieldRef<"TestCaseResult", 'String'>
     readonly memory: FieldRef<"TestCaseResult", 'String'>
     readonly time: FieldRef<"TestCaseResult", 'String'>
     readonly createdAt: FieldRef<"TestCaseResult", 'DateTime'>
@@ -8669,7 +8657,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistMinAggregateOutputType = {
     id: string | null
-    playlistId: string | null
+    playListId: string | null
     problemId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -8677,7 +8665,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistMaxAggregateOutputType = {
     id: string | null
-    playlistId: string | null
+    playListId: string | null
     problemId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -8685,7 +8673,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistCountAggregateOutputType = {
     id: number
-    playlistId: number
+    playListId: number
     problemId: number
     createdAt: number
     updatedAt: number
@@ -8695,7 +8683,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistMinAggregateInputType = {
     id?: true
-    playlistId?: true
+    playListId?: true
     problemId?: true
     createdAt?: true
     updatedAt?: true
@@ -8703,7 +8691,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistMaxAggregateInputType = {
     id?: true
-    playlistId?: true
+    playListId?: true
     problemId?: true
     createdAt?: true
     updatedAt?: true
@@ -8711,7 +8699,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistCountAggregateInputType = {
     id?: true
-    playlistId?: true
+    playListId?: true
     problemId?: true
     createdAt?: true
     updatedAt?: true
@@ -8792,7 +8780,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistGroupByOutputType = {
     id: string
-    playlistId: string
+    playListId: string
     problemId: string
     createdAt: Date
     updatedAt: Date
@@ -8817,7 +8805,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    playlistId?: boolean
+    playListId?: boolean
     problemId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8827,7 +8815,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    playlistId?: boolean
+    playListId?: boolean
     problemId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8837,7 +8825,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    playlistId?: boolean
+    playListId?: boolean
     problemId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8847,13 +8835,13 @@ export namespace Prisma {
 
   export type ProblemInPlaylistSelectScalar = {
     id?: boolean
-    playlistId?: boolean
+    playListId?: boolean
     problemId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProblemInPlaylistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playlistId" | "problemId" | "createdAt" | "updatedAt", ExtArgs["result"]["problemInPlaylist"]>
+  export type ProblemInPlaylistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playListId" | "problemId" | "createdAt" | "updatedAt", ExtArgs["result"]["problemInPlaylist"]>
   export type ProblemInPlaylistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     playlist?: boolean | PlaylistDefaultArgs<ExtArgs>
     problem?: boolean | ProblemDefaultArgs<ExtArgs>
@@ -8875,7 +8863,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      playlistId: string
+      playListId: string
       problemId: string
       createdAt: Date
       updatedAt: Date
@@ -9305,7 +9293,7 @@ export namespace Prisma {
    */
   interface ProblemInPlaylistFieldRefs {
     readonly id: FieldRef<"ProblemInPlaylist", 'String'>
-    readonly playlistId: FieldRef<"ProblemInPlaylist", 'String'>
+    readonly playListId: FieldRef<"ProblemInPlaylist", 'String'>
     readonly problemId: FieldRef<"ProblemInPlaylist", 'String'>
     readonly createdAt: FieldRef<"ProblemInPlaylist", 'DateTime'>
     readonly updatedAt: FieldRef<"ProblemInPlaylist", 'DateTime'>
@@ -9744,7 +9732,6 @@ export namespace Prisma {
     image: 'image',
     role: 'role',
     password: 'password',
-    isEmailVerified: 'isEmailVerified',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -9763,9 +9750,9 @@ export namespace Prisma {
     constraints: 'constraints',
     hints: 'hints',
     editorial: 'editorial',
-    testCases: 'testCases',
-    codeSnippet: 'codeSnippet',
-    referenceSolution: 'referenceSolution',
+    testcases: 'testcases',
+    codeSnippets: 'codeSnippets',
+    referenceSolutions: 'referenceSolutions',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -9837,7 +9824,7 @@ export namespace Prisma {
 
   export const ProblemInPlaylistScalarFieldEnum: {
     id: 'id',
-    playlistId: 'playlistId',
+    playListId: 'playListId',
     problemId: 'problemId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -9920,13 +9907,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -9969,20 +9949,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'status'
-   */
-  export type EnumstatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'status'>
-    
-
-
-  /**
-   * Reference to a field of type 'status[]'
-   */
-  export type ListEnumstatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'status[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -9993,6 +9959,13 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -10023,7 +9996,6 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     password?: StringFilter<"User"> | string
-    isEmailVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     problems?: ProblemListRelationFilter
@@ -10039,7 +10011,6 @@ export namespace Prisma {
     image?: SortOrderInput | SortOrder
     role?: SortOrder
     password?: SortOrder
-    isEmailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     problems?: ProblemOrderByRelationAggregateInput
@@ -10058,7 +10029,6 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     password?: StringFilter<"User"> | string
-    isEmailVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     problems?: ProblemListRelationFilter
@@ -10074,7 +10044,6 @@ export namespace Prisma {
     image?: SortOrderInput | SortOrder
     role?: SortOrder
     password?: SortOrder
-    isEmailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -10092,7 +10061,6 @@ export namespace Prisma {
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
     password?: StringWithAggregatesFilter<"User"> | string
-    isEmailVerified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -10111,9 +10079,9 @@ export namespace Prisma {
     constraints?: StringFilter<"Problem"> | string
     hints?: StringNullableFilter<"Problem"> | string | null
     editorial?: StringNullableFilter<"Problem"> | string | null
-    testCases?: JsonFilter<"Problem">
-    codeSnippet?: JsonFilter<"Problem">
-    referenceSolution?: JsonFilter<"Problem">
+    testcases?: JsonFilter<"Problem">
+    codeSnippets?: JsonFilter<"Problem">
+    referenceSolutions?: JsonFilter<"Problem">
     createdAt?: DateTimeFilter<"Problem"> | Date | string
     updatedAt?: DateTimeFilter<"Problem"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10133,9 +10101,9 @@ export namespace Prisma {
     constraints?: SortOrder
     hints?: SortOrderInput | SortOrder
     editorial?: SortOrderInput | SortOrder
-    testCases?: SortOrder
-    codeSnippet?: SortOrder
-    referenceSolution?: SortOrder
+    testcases?: SortOrder
+    codeSnippets?: SortOrder
+    referenceSolutions?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -10158,9 +10126,9 @@ export namespace Prisma {
     constraints?: StringFilter<"Problem"> | string
     hints?: StringNullableFilter<"Problem"> | string | null
     editorial?: StringNullableFilter<"Problem"> | string | null
-    testCases?: JsonFilter<"Problem">
-    codeSnippet?: JsonFilter<"Problem">
-    referenceSolution?: JsonFilter<"Problem">
+    testcases?: JsonFilter<"Problem">
+    codeSnippets?: JsonFilter<"Problem">
+    referenceSolutions?: JsonFilter<"Problem">
     createdAt?: DateTimeFilter<"Problem"> | Date | string
     updatedAt?: DateTimeFilter<"Problem"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10180,9 +10148,9 @@ export namespace Prisma {
     constraints?: SortOrder
     hints?: SortOrderInput | SortOrder
     editorial?: SortOrderInput | SortOrder
-    testCases?: SortOrder
-    codeSnippet?: SortOrder
-    referenceSolution?: SortOrder
+    testcases?: SortOrder
+    codeSnippets?: SortOrder
+    referenceSolutions?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProblemCountOrderByAggregateInput
@@ -10204,9 +10172,9 @@ export namespace Prisma {
     constraints?: StringWithAggregatesFilter<"Problem"> | string
     hints?: StringNullableWithAggregatesFilter<"Problem"> | string | null
     editorial?: StringNullableWithAggregatesFilter<"Problem"> | string | null
-    testCases?: JsonWithAggregatesFilter<"Problem">
-    codeSnippet?: JsonWithAggregatesFilter<"Problem">
-    referenceSolution?: JsonWithAggregatesFilter<"Problem">
+    testcases?: JsonWithAggregatesFilter<"Problem">
+    codeSnippets?: JsonWithAggregatesFilter<"Problem">
+    referenceSolutions?: JsonWithAggregatesFilter<"Problem">
     createdAt?: DateTimeWithAggregatesFilter<"Problem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Problem"> | Date | string
   }
@@ -10224,7 +10192,7 @@ export namespace Prisma {
     stdout?: StringNullableFilter<"Submission"> | string | null
     stderr?: StringNullableFilter<"Submission"> | string | null
     compileOutput?: StringNullableFilter<"Submission"> | string | null
-    status?: EnumstatusFilter<"Submission"> | $Enums.status
+    status?: StringFilter<"Submission"> | string
     memory?: StringNullableFilter<"Submission"> | string | null
     time?: StringNullableFilter<"Submission"> | string | null
     createdAt?: DateTimeFilter<"Submission"> | Date | string
@@ -10267,7 +10235,7 @@ export namespace Prisma {
     stdout?: StringNullableFilter<"Submission"> | string | null
     stderr?: StringNullableFilter<"Submission"> | string | null
     compileOutput?: StringNullableFilter<"Submission"> | string | null
-    status?: EnumstatusFilter<"Submission"> | $Enums.status
+    status?: StringFilter<"Submission"> | string
     memory?: StringNullableFilter<"Submission"> | string | null
     time?: StringNullableFilter<"Submission"> | string | null
     createdAt?: DateTimeFilter<"Submission"> | Date | string
@@ -10310,7 +10278,7 @@ export namespace Prisma {
     stdout?: StringNullableWithAggregatesFilter<"Submission"> | string | null
     stderr?: StringNullableWithAggregatesFilter<"Submission"> | string | null
     compileOutput?: StringNullableWithAggregatesFilter<"Submission"> | string | null
-    status?: EnumstatusWithAggregatesFilter<"Submission"> | $Enums.status
+    status?: StringWithAggregatesFilter<"Submission"> | string
     memory?: StringNullableWithAggregatesFilter<"Submission"> | string | null
     time?: StringNullableWithAggregatesFilter<"Submission"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Submission"> | Date | string
@@ -10329,7 +10297,7 @@ export namespace Prisma {
     expected?: StringFilter<"TestCaseResult"> | string
     stderr?: StringNullableFilter<"TestCaseResult"> | string | null
     compileOutput?: StringNullableFilter<"TestCaseResult"> | string | null
-    status?: EnumstatusFilter<"TestCaseResult"> | $Enums.status
+    status?: StringFilter<"TestCaseResult"> | string
     memory?: StringNullableFilter<"TestCaseResult"> | string | null
     time?: StringNullableFilter<"TestCaseResult"> | string | null
     createdAt?: DateTimeFilter<"TestCaseResult"> | Date | string
@@ -10366,7 +10334,7 @@ export namespace Prisma {
     expected?: StringFilter<"TestCaseResult"> | string
     stderr?: StringNullableFilter<"TestCaseResult"> | string | null
     compileOutput?: StringNullableFilter<"TestCaseResult"> | string | null
-    status?: EnumstatusFilter<"TestCaseResult"> | $Enums.status
+    status?: StringFilter<"TestCaseResult"> | string
     memory?: StringNullableFilter<"TestCaseResult"> | string | null
     time?: StringNullableFilter<"TestCaseResult"> | string | null
     createdAt?: DateTimeFilter<"TestCaseResult"> | Date | string
@@ -10407,7 +10375,7 @@ export namespace Prisma {
     expected?: StringWithAggregatesFilter<"TestCaseResult"> | string
     stderr?: StringNullableWithAggregatesFilter<"TestCaseResult"> | string | null
     compileOutput?: StringNullableWithAggregatesFilter<"TestCaseResult"> | string | null
-    status?: EnumstatusWithAggregatesFilter<"TestCaseResult"> | $Enums.status
+    status?: StringWithAggregatesFilter<"TestCaseResult"> | string
     memory?: StringNullableWithAggregatesFilter<"TestCaseResult"> | string | null
     time?: StringNullableWithAggregatesFilter<"TestCaseResult"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"TestCaseResult"> | Date | string
@@ -10542,7 +10510,7 @@ export namespace Prisma {
     OR?: ProblemInPlaylistWhereInput[]
     NOT?: ProblemInPlaylistWhereInput | ProblemInPlaylistWhereInput[]
     id?: StringFilter<"ProblemInPlaylist"> | string
-    playlistId?: StringFilter<"ProblemInPlaylist"> | string
+    playListId?: StringFilter<"ProblemInPlaylist"> | string
     problemId?: StringFilter<"ProblemInPlaylist"> | string
     createdAt?: DateTimeFilter<"ProblemInPlaylist"> | Date | string
     updatedAt?: DateTimeFilter<"ProblemInPlaylist"> | Date | string
@@ -10552,7 +10520,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistOrderByWithRelationInput = {
     id?: SortOrder
-    playlistId?: SortOrder
+    playListId?: SortOrder
     problemId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10562,21 +10530,21 @@ export namespace Prisma {
 
   export type ProblemInPlaylistWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    playlistId_problemId?: ProblemInPlaylistPlaylistIdProblemIdCompoundUniqueInput
+    playListId_problemId?: ProblemInPlaylistPlayListIdProblemIdCompoundUniqueInput
     AND?: ProblemInPlaylistWhereInput | ProblemInPlaylistWhereInput[]
     OR?: ProblemInPlaylistWhereInput[]
     NOT?: ProblemInPlaylistWhereInput | ProblemInPlaylistWhereInput[]
-    playlistId?: StringFilter<"ProblemInPlaylist"> | string
+    playListId?: StringFilter<"ProblemInPlaylist"> | string
     problemId?: StringFilter<"ProblemInPlaylist"> | string
     createdAt?: DateTimeFilter<"ProblemInPlaylist"> | Date | string
     updatedAt?: DateTimeFilter<"ProblemInPlaylist"> | Date | string
     playlist?: XOR<PlaylistScalarRelationFilter, PlaylistWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
-  }, "id" | "playlistId_problemId">
+  }, "id" | "playListId_problemId">
 
   export type ProblemInPlaylistOrderByWithAggregationInput = {
     id?: SortOrder
-    playlistId?: SortOrder
+    playListId?: SortOrder
     problemId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10590,7 +10558,7 @@ export namespace Prisma {
     OR?: ProblemInPlaylistScalarWhereWithAggregatesInput[]
     NOT?: ProblemInPlaylistScalarWhereWithAggregatesInput | ProblemInPlaylistScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ProblemInPlaylist"> | string
-    playlistId?: StringWithAggregatesFilter<"ProblemInPlaylist"> | string
+    playListId?: StringWithAggregatesFilter<"ProblemInPlaylist"> | string
     problemId?: StringWithAggregatesFilter<"ProblemInPlaylist"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ProblemInPlaylist"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ProblemInPlaylist"> | Date | string
@@ -10603,7 +10571,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemCreateNestedManyWithoutUserInput
@@ -10619,7 +10586,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemUncheckedCreateNestedManyWithoutUserInput
@@ -10635,7 +10601,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUpdateManyWithoutUserNestedInput
@@ -10651,7 +10616,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUncheckedUpdateManyWithoutUserNestedInput
@@ -10667,7 +10631,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10679,7 +10642,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10691,7 +10653,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10706,9 +10667,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProblemsInput
@@ -10728,9 +10689,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionUncheckedCreateNestedManyWithoutProblemInput
@@ -10748,9 +10709,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProblemsNestedInput
@@ -10770,9 +10731,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUncheckedUpdateManyWithoutProblemNestedInput
@@ -10791,9 +10752,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10808,9 +10769,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10826,9 +10787,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10841,7 +10802,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -10861,7 +10822,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -10877,7 +10838,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10897,7 +10858,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10915,7 +10876,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -10930,7 +10891,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10947,7 +10908,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10962,7 +10923,7 @@ export namespace Prisma {
     expected: string
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -10979,7 +10940,7 @@ export namespace Prisma {
     expected: string
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -10994,7 +10955,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11011,7 +10972,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11027,7 +10988,7 @@ export namespace Prisma {
     expected: string
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -11042,7 +11003,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11058,7 +11019,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11195,7 +11156,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistUncheckedCreateInput = {
     id?: string
-    playlistId: string
+    playListId: string
     problemId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11211,7 +11172,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    playlistId?: StringFieldUpdateOperationsInput | string
+    playListId?: StringFieldUpdateOperationsInput | string
     problemId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11219,7 +11180,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistCreateManyInput = {
     id?: string
-    playlistId: string
+    playListId: string
     problemId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11233,7 +11194,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    playlistId?: StringFieldUpdateOperationsInput | string
+    playListId?: StringFieldUpdateOperationsInput | string
     problemId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11274,11 +11235,6 @@ export namespace Prisma {
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
     notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -11344,7 +11300,6 @@ export namespace Prisma {
     image?: SortOrder
     role?: SortOrder
     password?: SortOrder
-    isEmailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11356,7 +11311,6 @@ export namespace Prisma {
     image?: SortOrder
     role?: SortOrder
     password?: SortOrder
-    isEmailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11368,7 +11322,6 @@ export namespace Prisma {
     image?: SortOrder
     role?: SortOrder
     password?: SortOrder
-    isEmailVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11417,14 +11370,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -11505,9 +11450,9 @@ export namespace Prisma {
     constraints?: SortOrder
     hints?: SortOrder
     editorial?: SortOrder
-    testCases?: SortOrder
-    codeSnippet?: SortOrder
-    referenceSolution?: SortOrder
+    testcases?: SortOrder
+    codeSnippets?: SortOrder
+    referenceSolutions?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11574,13 +11519,6 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
-  export type EnumstatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.status | EnumstatusFieldRefInput<$PrismaModel>
-    in?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumstatusFilter<$PrismaModel> | $Enums.status
-  }
-
   export type ProblemScalarRelationFilter = {
     is?: ProblemWhereInput
     isNot?: ProblemWhereInput
@@ -11645,16 +11583,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type EnumstatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.status | EnumstatusFieldRefInput<$PrismaModel>
-    in?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumstatusWithAggregatesFilter<$PrismaModel> | $Enums.status
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumstatusFilter<$PrismaModel>
-    _max?: NestedEnumstatusFilter<$PrismaModel>
-  }
-
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -11664,6 +11592,11 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type SubmissionScalarRelationFilter = {
@@ -11743,6 +11676,14 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type ProblemSolvedUserIdProblemIdCompoundUniqueInput = {
     userId: string
     problemId: string
@@ -11809,14 +11750,14 @@ export namespace Prisma {
     isNot?: PlaylistWhereInput
   }
 
-  export type ProblemInPlaylistPlaylistIdProblemIdCompoundUniqueInput = {
-    playlistId: string
+  export type ProblemInPlaylistPlayListIdProblemIdCompoundUniqueInput = {
+    playListId: string
     problemId: string
   }
 
   export type ProblemInPlaylistCountOrderByAggregateInput = {
     id?: SortOrder
-    playlistId?: SortOrder
+    playListId?: SortOrder
     problemId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11824,7 +11765,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistMaxOrderByAggregateInput = {
     id?: SortOrder
-    playlistId?: SortOrder
+    playListId?: SortOrder
     problemId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11832,7 +11773,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistMinOrderByAggregateInput = {
     id?: SortOrder
-    playlistId?: SortOrder
+    playListId?: SortOrder
     problemId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11904,10 +11845,6 @@ export namespace Prisma {
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -12205,10 +12142,6 @@ export namespace Prisma {
     connect?: TestCaseResultWhereUniqueInput | TestCaseResultWhereUniqueInput[]
   }
 
-  export type EnumstatusFieldUpdateOperationsInput = {
-    set?: $Enums.status
-  }
-
   export type UserUpdateOneRequiredWithoutSubmissionNestedInput = {
     create?: XOR<UserCreateWithoutSubmissionInput, UserUncheckedCreateWithoutSubmissionInput>
     connectOrCreate?: UserCreateOrConnectWithoutSubmissionInput
@@ -12265,6 +12198,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type SubmissionUpdateOneRequiredWithoutTestCasesNestedInput = {
@@ -12422,11 +12359,6 @@ export namespace Prisma {
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -12504,14 +12436,6 @@ export namespace Prisma {
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -12566,21 +12490,9 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedEnumstatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.status | EnumstatusFieldRefInput<$PrismaModel>
-    in?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumstatusFilter<$PrismaModel> | $Enums.status
-  }
-
-  export type NestedEnumstatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.status | EnumstatusFieldRefInput<$PrismaModel>
-    in?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.status[] | ListEnumstatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumstatusWithAggregatesFilter<$PrismaModel> | $Enums.status
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumstatusFilter<$PrismaModel>
-    _max?: NestedEnumstatusFilter<$PrismaModel>
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -12610,6 +12522,14 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type ProblemCreateWithoutUserInput = {
     id?: string
     title: string
@@ -12620,9 +12540,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionCreateNestedManyWithoutProblemInput
@@ -12640,9 +12560,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionUncheckedCreateNestedManyWithoutProblemInput
@@ -12668,7 +12588,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -12686,7 +12606,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -12786,9 +12706,9 @@ export namespace Prisma {
     constraints?: StringFilter<"Problem"> | string
     hints?: StringNullableFilter<"Problem"> | string | null
     editorial?: StringNullableFilter<"Problem"> | string | null
-    testCases?: JsonFilter<"Problem">
-    codeSnippet?: JsonFilter<"Problem">
-    referenceSolution?: JsonFilter<"Problem">
+    testcases?: JsonFilter<"Problem">
+    codeSnippets?: JsonFilter<"Problem">
+    referenceSolutions?: JsonFilter<"Problem">
     createdAt?: DateTimeFilter<"Problem"> | Date | string
     updatedAt?: DateTimeFilter<"Problem"> | Date | string
   }
@@ -12822,7 +12742,7 @@ export namespace Prisma {
     stdout?: StringNullableFilter<"Submission"> | string | null
     stderr?: StringNullableFilter<"Submission"> | string | null
     compileOutput?: StringNullableFilter<"Submission"> | string | null
-    status?: EnumstatusFilter<"Submission"> | $Enums.status
+    status?: StringFilter<"Submission"> | string
     memory?: StringNullableFilter<"Submission"> | string | null
     time?: StringNullableFilter<"Submission"> | string | null
     createdAt?: DateTimeFilter<"Submission"> | Date | string
@@ -12891,7 +12811,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionCreateNestedManyWithoutUserInput
@@ -12906,7 +12825,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionUncheckedCreateNestedManyWithoutUserInput
@@ -12927,7 +12845,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -12945,7 +12863,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -12996,7 +12914,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistUncheckedCreateWithoutProblemInput = {
     id?: string
-    playlistId: string
+    playListId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13029,7 +12947,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUpdateManyWithoutUserNestedInput
@@ -13044,7 +12961,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUncheckedUpdateManyWithoutUserNestedInput
@@ -13105,7 +13021,7 @@ export namespace Prisma {
     OR?: ProblemInPlaylistScalarWhereInput[]
     NOT?: ProblemInPlaylistScalarWhereInput | ProblemInPlaylistScalarWhereInput[]
     id?: StringFilter<"ProblemInPlaylist"> | string
-    playlistId?: StringFilter<"ProblemInPlaylist"> | string
+    playListId?: StringFilter<"ProblemInPlaylist"> | string
     problemId?: StringFilter<"ProblemInPlaylist"> | string
     createdAt?: DateTimeFilter<"ProblemInPlaylist"> | Date | string
     updatedAt?: DateTimeFilter<"ProblemInPlaylist"> | Date | string
@@ -13118,7 +13034,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemCreateNestedManyWithoutUserInput
@@ -13133,7 +13048,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemUncheckedCreateNestedManyWithoutUserInput
@@ -13156,9 +13070,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProblemsInput
@@ -13177,9 +13091,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     solvedBy?: ProblemSolvedUncheckedCreateNestedManyWithoutProblemInput
@@ -13199,7 +13113,7 @@ export namespace Prisma {
     expected: string
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -13214,7 +13128,7 @@ export namespace Prisma {
     expected: string
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -13249,7 +13163,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUpdateManyWithoutUserNestedInput
@@ -13264,7 +13177,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUncheckedUpdateManyWithoutUserNestedInput
@@ -13293,9 +13205,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProblemsNestedInput
@@ -13314,9 +13226,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     solvedBy?: ProblemSolvedUncheckedUpdateManyWithoutProblemNestedInput
@@ -13351,7 +13263,7 @@ export namespace Prisma {
     expected?: StringFilter<"TestCaseResult"> | string
     stderr?: StringNullableFilter<"TestCaseResult"> | string | null
     compileOutput?: StringNullableFilter<"TestCaseResult"> | string | null
-    status?: EnumstatusFilter<"TestCaseResult"> | $Enums.status
+    status?: StringFilter<"TestCaseResult"> | string
     memory?: StringNullableFilter<"TestCaseResult"> | string | null
     time?: StringNullableFilter<"TestCaseResult"> | string | null
     createdAt?: DateTimeFilter<"TestCaseResult"> | Date | string
@@ -13366,7 +13278,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -13385,7 +13297,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -13416,7 +13328,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13435,7 +13347,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13449,7 +13361,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemCreateNestedManyWithoutUserInput
@@ -13464,7 +13375,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemUncheckedCreateNestedManyWithoutUserInput
@@ -13487,9 +13397,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProblemsInput
@@ -13508,9 +13418,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionUncheckedCreateNestedManyWithoutProblemInput
@@ -13540,7 +13450,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUpdateManyWithoutUserNestedInput
@@ -13555,7 +13464,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUncheckedUpdateManyWithoutUserNestedInput
@@ -13584,9 +13492,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProblemsNestedInput
@@ -13605,9 +13513,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUncheckedUpdateManyWithoutProblemNestedInput
@@ -13645,7 +13553,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemCreateNestedManyWithoutUserInput
@@ -13660,7 +13567,6 @@ export namespace Prisma {
     image?: string | null
     role?: $Enums.UserRole
     password: string
-    isEmailVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     problems?: ProblemUncheckedCreateNestedManyWithoutUserInput
@@ -13707,7 +13613,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUpdateManyWithoutUserNestedInput
@@ -13722,7 +13627,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     password?: StringFieldUpdateOperationsInput | string
-    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     problems?: ProblemUncheckedUpdateManyWithoutUserNestedInput
@@ -13763,9 +13667,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProblemsInput
@@ -13784,9 +13688,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     submission?: SubmissionUncheckedCreateNestedManyWithoutProblemInput
@@ -13848,9 +13752,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProblemsNestedInput
@@ -13869,9 +13773,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUncheckedUpdateManyWithoutProblemNestedInput
@@ -13888,9 +13792,9 @@ export namespace Prisma {
     constraints: string
     hints?: string | null
     editorial?: string | null
-    testCases: JsonNullValueInput | InputJsonValue
-    codeSnippet: JsonNullValueInput | InputJsonValue
-    referenceSolution: JsonNullValueInput | InputJsonValue
+    testcases: JsonNullValueInput | InputJsonValue
+    codeSnippets: JsonNullValueInput | InputJsonValue
+    referenceSolutions: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13904,7 +13808,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -13936,9 +13840,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUpdateManyWithoutProblemNestedInput
@@ -13956,9 +13860,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     submission?: SubmissionUncheckedUpdateManyWithoutProblemNestedInput
@@ -13976,9 +13880,9 @@ export namespace Prisma {
     constraints?: StringFieldUpdateOperationsInput | string
     hints?: NullableStringFieldUpdateOperationsInput | string | null
     editorial?: NullableStringFieldUpdateOperationsInput | string | null
-    testCases?: JsonNullValueInput | InputJsonValue
-    codeSnippet?: JsonNullValueInput | InputJsonValue
-    referenceSolution?: JsonNullValueInput | InputJsonValue
+    testcases?: JsonNullValueInput | InputJsonValue
+    codeSnippets?: JsonNullValueInput | InputJsonValue
+    referenceSolutions?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13991,7 +13895,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14009,7 +13913,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14026,7 +13930,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14089,7 +13993,7 @@ export namespace Prisma {
     stdout?: string | null
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -14105,7 +14009,7 @@ export namespace Prisma {
 
   export type ProblemInPlaylistCreateManyProblemInput = {
     id?: string
-    playlistId: string
+    playListId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14118,7 +14022,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14136,7 +14040,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14153,7 +14057,7 @@ export namespace Prisma {
     stdout?: NullableStringFieldUpdateOperationsInput | string | null
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14190,14 +14094,14 @@ export namespace Prisma {
 
   export type ProblemInPlaylistUncheckedUpdateWithoutProblemInput = {
     id?: StringFieldUpdateOperationsInput | string
-    playlistId?: StringFieldUpdateOperationsInput | string
+    playListId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProblemInPlaylistUncheckedUpdateManyWithoutProblemInput = {
     id?: StringFieldUpdateOperationsInput | string
-    playlistId?: StringFieldUpdateOperationsInput | string
+    playListId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14210,7 +14114,7 @@ export namespace Prisma {
     expected: string
     stderr?: string | null
     compileOutput?: string | null
-    status?: $Enums.status
+    status: string
     memory?: string | null
     time?: string | null
     createdAt?: Date | string
@@ -14225,7 +14129,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14240,7 +14144,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14255,7 +14159,7 @@ export namespace Prisma {
     expected?: StringFieldUpdateOperationsInput | string
     stderr?: NullableStringFieldUpdateOperationsInput | string | null
     compileOutput?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    status?: StringFieldUpdateOperationsInput | string
     memory?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
