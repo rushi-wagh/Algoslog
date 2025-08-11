@@ -8,9 +8,10 @@ import SignUpPage from "./page/SignUpPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import Layout from "./layout/Layout";
-import AdminRoute from "./components/AdminRoute";
+
 import AddProblem from "./page/AddProblem";
 import ProblemPage from "./page/ProblemPage";
+import AdminRoute from "./Components/AdminRoute";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
