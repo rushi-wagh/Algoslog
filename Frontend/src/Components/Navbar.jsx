@@ -1,93 +1,175 @@
-import React from "react"
-import { User, Code, LogOut } from "lucide-react";
-import { useAuthStore } from "../store/useAuthStore";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 import LogoutButton from "./LogoutButton";
 
+const authLinks = [
+  { label: "Home", to: "/" },
+  { label: "Problems", to: "/problems" },
+  { label: "Pricing", to: "/pricing" },
+  { label: "About", to: "/about" },
+];
 
+const guestLinks = [
+  { label: "Login", to: "/login" },
+  { label: "Problems", to: "/problems" },
+  { label: "About", to: "/about" },
+];
 
-const Navbar = ()=>{
+const NavBar = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { authUser } = useAuthStore();
 
-    const {authUser} = useAuthStore()
+  const isLoggedIn =
+    authUser && typeof authUser === "object" && Object.keys(authUser).length > 0;
 
-    console.log("AUTH_USER",authUser)
+  const menuLinks = isLoggedIn ? authLinks : guestLinks;
 
-    return (
-     <nav className="sticky top-0 z-50 w-full py-5">
-      <div className="flex w-full justify-between mx-auto max-w-4xl bg-black/15 shadow-lg shadow-neutral-600/5 backdrop-blur-lg border border-gray-200/10 p-4 rounded-2xl">
-        {/* Logo Section */}
-        <Link to="/" className="flex items-center gap-3 cursor-pointer">
-          <img src="/leetlab.svg" className="h-18 w-18 bg-primary/20 text-primary border-none px-2 py-2 rounded-full" />
-          <span className="text-lg md:text-2xl font-bold tracking-tight text-white hidden md:block">
-          Leetlab 
-          </span>
+  return (
+    <header className="relative z-50 bg-[#FEFDFB] text-gray-700">
+      <nav className="navbar px-4 md:px-12  flex justify-between items-center">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="text-xl md:text-2xl font-bold tracking-wide text-gray-700"
+        >
+          ALGOSLOG
         </Link>
 
-        {/* User Profile and Dropdown */}
-        <div className="flex items-center gap-8">
-          <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-ghost btn-circle avatar flex flex-row ">
-              <div className="w-10 rounded-full ">
-                <img
-                  src={
-                    authUser?.image ||
-                    "https://avatar.iran.liara.run/public/boy"
-                  }
-                  alt="User Avatar"
-                  className="object-cover"
-                />
-              </div>
-           
-            </label>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 space-y-3"
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-5">
+          {menuLinks.map((l) => (
+            <Link
+              key={l.label}
+              to={l.to}
+              className="transition-colors rounded-xl px-3 py-2 text-gray-700"
             >
-              {/* Admin Option */}
-             
-
-              {/* Common Options */}
-              <li>
-                <p className="text-base font-semibold">
-                 
-                  {authUser?.name}
-
-                </p>
-                <hr className="border-gray-200/10" />
-              </li>
-              <li>
-                <Link
-                  to="/profile"
-                  className="hover:bg-primary hover:text-white text-base font-semibold"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  My Profile
-                </Link>
-              </li>
-              {authUser?.role === "ADMIN" && (
-                <li>
-                  <Link
-                    to="/add-problem"
-                    className="hover:bg-primary hover:text-white text-base font-semibold"
-                  >
-                    <Code className="w-4 h-4 mr-1" />
-                    Add Problem
-                  </Link>
-                </li>
-              )}
-              <li>
-                <LogoutButton className="hover:bg-primary hover:text-white">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </LogoutButton>
-              </li>
-            </ul>
-          </div>
+              {l.label}
+            </Link>
+          ))}
         </div>
+
+        {/* Right Side */}
+        <div className="hidden md:flex items-center gap-3">
+          {!isLoggedIn && (
+            <div className="border border-solid border-red-700 rounded-3xl">
+              <Link
+                to="/get-started"
+                className="rounded-full px-5 py-2 text-red-700 hover:bg-red-700 hover:text-white transition-colors"
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
+
+          {isLoggedIn && (
+            <>
+              <LogoutButton className="rounded-full px-5 py-2 text-red-700 hover:bg-red-700 hover:text-white transition-colors">
+                Logout
+              </LogoutButton>
+
+              <div className="dropdown dropdown-end">
+                <label
+                  tabIndex={0}
+                  className="btn btn-ghost btn-circle avatar flex flex-row"
+                >
+                  <div className="w-10 rounded-full">
+                    <img
+                      src={
+                        authUser?.image ||
+                        "https://avatar.iran.liara.run/public/boy"
+                      }
+                      alt="User Avatar"
+                      className="object-cover"
+                    />
+                  </div>
+                </label>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Hamburger */}
+        <div className="md:hidden">
+          <button
+            onClick={() => setMobileOpen((s) => !s)}
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            className="p-1 text-gray-700"
+          >
+            {mobileOpen ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <div
+        className={`md:hidden fixed top-0 right-0 h-full w-[80%] max-w-xs bg-[#0F2740] text-[#E6EEF6] shadow-2xl transform transition-transform duration-300 ease-in-out ${
+          mobileOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-5">
+          <Link to="/" onClick={() => setMobileOpen(false)}>
+            ALGOSLOG
+          </Link>
+          <button onClick={() => setMobileOpen(false)} aria-label="Close menu">
+            ✕
+          </button>
+        </div>
+        <nav className="flex flex-col gap-3 px-5">
+          {menuLinks.map((l) => (
+            <Link
+              key={l.label}
+              to={l.to}
+              className="rounded-md px-3 py-2 hover:bg-[#13283f]"
+              onClick={() => setMobileOpen(false)}
+            >
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            to="/get-started"
+            className="mt-3 text-center rounded-full px-5 py-2 text-white"
+            style={{
+              backgroundImage: "linear-gradient(90deg,#3B82F6,#7C8CFF)",
+            }}
+            onClick={() => setMobileOpen(false)}
+          >
+            Get Started
+          </Link>
+        </nav>
       </div>
-    </nav>
-    )
-}
+    </header>
+  );
+};
 
-
-export default Navbar;
+export default NavBar;

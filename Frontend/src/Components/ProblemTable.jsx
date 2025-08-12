@@ -238,3 +238,4 @@ const ProblemsTable = ({ problems }) => {
 };
 
 ;
+export default ProblemsTable;
