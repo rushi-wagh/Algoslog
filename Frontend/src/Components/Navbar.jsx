@@ -16,7 +16,7 @@ const guestLinks = [
   { label: "About", to: "/about" },
 ];
 
-const NavBar = () => {
+const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { authUser } = useAuthStore();
 
@@ -24,14 +24,14 @@ const NavBar = () => {
     authUser && typeof authUser === "object" && Object.keys(authUser).length > 0;
 
   const menuLinks = isLoggedIn ? authLinks : guestLinks;
-
+// #FEFDFB
   return (
-    <header className="relative z-50 bg-[#FEFDFB] text-gray-700">
+    <header className="relative z-50 bg-[#E1E9C9] text-[#455945] border-b border-solid border-gray-300 shadow-md">
       <nav className="navbar px-4 md:px-12  flex justify-between items-center">
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl md:text-2xl font-bold tracking-wide text-gray-700"
+          className="text-xl md:text-2xl font-bold tracking-wide text-[#455945]"
         >
           ALGOSLOG
         </Link>
@@ -168,8 +168,9 @@ const NavBar = () => {
           </Link>
         </nav>
       </div>
+      
     </header>
   );
 };
 
-export default NavBar;
+export default Navbar;

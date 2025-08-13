@@ -1,13 +1,15 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import Navbar from '../components/Navbar'
-import NavBar from '../Components/NavBar2'
+import Navbar from '../Components/Navbar'
+
+import Footer from '../Components/Footer'
 
 const Layout = () => {
   return (
     <div className='w-full'>
         <Navbar/>
         <Outlet/>
+        <Footer/>
     </div>
   )
 }

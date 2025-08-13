@@ -63,7 +63,7 @@ function reverseList(head) {
   }, [codeSnippets.length])
 
   return (
-    <div className="hidden lg:flex flex-col items-center justify-center bg-[#FEFDFB] text-gray-800 p-12 relative overflow-hidden">
+    <div className="hidden lg:flex flex-col items-center justify-center  text-gray-800  relative overflow-hidden bg-[#2E3D2E] rounded-xl shadow-lg shadow-black/20 border border-[#415641] p-6">
       {/* Animated icons */}
       <div className="absolute inset-0 opacity-15">
         <div className="absolute top-[10%] left-[15%] text-primary animate-pulse">
@@ -76,14 +76,14 @@ function reverseList(head) {
           <Terminal size={45} />
         </div>
         <div className="absolute top-[60%] left-[75%] text-primary animate-pulse delay-500">
-          <Code size={55} />
+          <Code size={65} />
         </div>
       </div>
 
       {/* Main container */}
-      <div className="z-10 max-w-md flex flex-col items-center">
+      <div className="z-10 max-w-md flex flex-col w-150 items-center">
         {/* Light-themed code editor */}
-        <div className="w-full bg-white border border-gray-200 rounded-lg shadow-lg mb-8 overflow-hidden">
+        <div className="w-full bg-[#E1E9C9] border border-gray-200 rounded-lg shadow-lg mb-8 overflow-hidde">
           {/* Editor header */}
           <div className="bg-gray-100 px-4 py-2 flex items-center">
             <div className="flex space-x-2 mr-4">
@@ -95,8 +95,8 @@ function reverseList(head) {
           </div>
 
           {/* Code area */}
-          <div className="p-4 font-mono text-xs sm:text-sm overflow-hidden relative h-64 bg-[#fafafa]">
-            <pre className="whitespace-pre-wrap text-green-600 transition-opacity duration-1000">
+          <div className="p-4 font-mono text-xs sm:text-sm overflow-hidden relative h-64  bg-[#455945]">
+            <pre className="whitespace-pre-wrap text-white transition-opacity duration-1000">
               {codeSnippets[activeIndex]}
             </pre>
             <div className="absolute bottom-4 right-4 w-2 h-4 bg-green-600 animate-blink"></div>
@@ -106,13 +106,13 @@ function reverseList(head) {
         {/* Logo */}
         <div className="flex items-center justify-center mb-6">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Code className="w-6 h-6 text-primary" />
+            <Code className="w-6 h-6 text-[#455945]" />
           </div>
         </div>
 
         {/* Text */}
         <h2 className="text-2xl font-bold mb-4 text-center">{title}</h2>
-        <p className="text-gray-600 text-center">{subtitle}</p>
+        <p className="text-[#455945] text-center">{subtitle}</p>
       </div>
     </div>
   )

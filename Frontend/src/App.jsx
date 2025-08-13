@@ -35,7 +35,7 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route
             index
-            element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
+            element={authUser ? <HomePage /> : <HomePage />}
           />
         </Route>
 
