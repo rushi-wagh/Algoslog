@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import LogoutButton from "./LogoutButton";
+import { LogOut } from "lucide-react";
 
 const authLinks = [
   { label: "Home", to: "/" },
@@ -21,13 +22,15 @@ const Navbar = () => {
   const { authUser } = useAuthStore();
 
   const isLoggedIn =
-    authUser && typeof authUser === "object" && Object.keys(authUser).length > 0;
+    authUser &&
+    typeof authUser === "object" &&
+    Object.keys(authUser).length > 0;
 
   const menuLinks = isLoggedIn ? authLinks : guestLinks;
-// #FEFDFB
+
   return (
     <header className="relative z-50 bg-[#E1E9C9] text-[#455945] border-b border-solid border-gray-300 shadow-md">
-      <nav className="navbar px-4 md:px-12  flex justify-between items-center">
+      <nav className="navbar px-4 md:px-12 flex justify-between items-center">
         {/* Logo */}
         <Link
           to="/"
@@ -63,29 +66,46 @@ const Navbar = () => {
           )}
 
           {isLoggedIn && (
-            <>
-              <LogoutButton className="rounded-full px-5 py-2 text-red-700 hover:bg-red-700 hover:text-white transition-colors">
-                Logout
-              </LogoutButton>
+            <div className="dropdown dropdown-end">
+              <label
+                tabIndex={0}
+                className="btn btn-ghost btn-circle avatar flex flex-row"
+              >
+                <div className="w-10 rounded-full">
+                  <img
+                    src={
+                      authUser?.image ||
+                      "https://avatar.iran.liara.run/public/boy"
+                    }
+                    alt="User Avatar"
+                    className="object-cover"
+                  />
+                </div>
+              </label>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                 <li className="text-center text-white ml-3 rounded">
+                <p className="rounded-xl text-base font-semibold">
+                 
+                  Hello,{authUser?.name}
 
-              <div className="dropdown dropdown-end">
-                <label
-                  tabIndex={0}
-                  className="btn btn-ghost btn-circle avatar flex flex-row"
-                >
-                  <div className="w-10 rounded-full">
-                    <img
-                      src={
-                        authUser?.image ||
-                        "https://avatar.iran.liara.run/public/boy"
-                      }
-                      alt="User Avatar"
-                      className="object-cover"
-                    />
-                  </div>
-                </label>
-              </div>
-            </>
+                </p>
+                <hr className="border-gray-200/10" />
+              </li>
+                <li className="text-center text-white ml-3 rounded">
+                  <Link to="/profile" className="rounded-xl">My Profile</Link>
+                </li>
+               <li>
+                <LogoutButton className="hover:bg-primary hover:text-white">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </LogoutButton>
+              </li>
+              
+              </ul>
+            </div>
           )}
         </div>
 
@@ -106,7 +126,11 @@ const Navbar = () => {
                 stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             ) : (
               <svg
@@ -117,14 +141,18 @@ const Navbar = () => {
                 stroke="currentColor"
                 strokeWidth="2"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             )}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {mobileOpen && (
         <div
           className="md:hidden fixed inset-0 bg-black/50"
@@ -132,6 +160,7 @@ const Navbar = () => {
         />
       )}
 
+      {/* Mobile Menu */}
       <div
         className={`md:hidden fixed top-0 right-0 h-full w-[80%] max-w-xs bg-[#0F2740] text-[#E6EEF6] shadow-2xl transform transition-transform duration-300 ease-in-out ${
           mobileOpen ? "translate-x-0" : "translate-x-full"
@@ -156,19 +185,20 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
-          <Link
-            to="/get-started"
-            className="mt-3 text-center rounded-full px-5 py-2 text-white"
-            style={{
-              backgroundImage: "linear-gradient(90deg,#3B82F6,#7C8CFF)",
-            }}
-            onClick={() => setMobileOpen(false)}
-          >
-            Get Started
-          </Link>
+          {!isLoggedIn && (
+            <Link
+              to="/get-started"
+              className="mt-3 text-center rounded-full px-5 py-2 text-white"
+              style={{
+                backgroundImage: "linear-gradient(90deg,#3B82F6,#7C8CFF)",
+              }}
+              onClick={() => setMobileOpen(false)}
+            >
+              Get Started
+            </Link>
+          )}
         </nav>
       </div>
-      
     </header>
   );
 };

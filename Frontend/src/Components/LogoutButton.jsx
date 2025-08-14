@@ -8,7 +8,7 @@ const LogoutButton = ({children}) => {
   console.log("User logged out");
   }
   return (
-    <button className='rounded-full px-5 py-2 text-white cursor-pointer bg-red-600 hover:bg-red-900 hover:text-white transition-colors' onClick={logoutClick}>
+    <button className='rounded-full px-5 py-2 text-white cursor-pointer  transition-colors' onClick={logoutClick}>
       {children}
     </button>
   )
