@@ -3,3 +3,8 @@
 body {
     background-color: #E1E9C9;
 }
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px #F6F7EC inset !important; /* Match your bg */
+  -webkit-text-fill-color: #2F3E32 !important; /* Text color */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent flash */
+}

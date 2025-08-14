@@ -19,10 +19,7 @@ const Footer = () => {
         {/* Brand / About */}
         <div>
           <h3 className="text-xl font-bold mb-3">ALGOSLOG</h3>
-          <p className="text-sm text-gray-700 leading-relaxed">
-            Track your problem-solving journey, stay consistent, and grow your
-            skills — all in one place.
-          </p>
+          
         </div>
 
         {/* Quick Links */}
