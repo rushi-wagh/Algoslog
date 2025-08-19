@@ -61,10 +61,11 @@ export const createPlayList = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, Playlist, "playlist created succesfully"));
 });
 export const addProblemToPlaylist = asyncHandler(async (req, res) => {
-  const { playlistId } = req.params;
+  const { playListId } = req.params;
+  console.log(playListId)
   const { problemIds } = req.body;
 
-  if (!playlistId) {
+  if (!playListId) {
     throw new ApiError(400, "No playlistId provided");
   }
 
@@ -74,33 +75,34 @@ export const addProblemToPlaylist = asyncHandler(async (req, res) => {
 
   const problemsInPlaylist = await db.problemInPlaylist.createMany({
     data: problemIds.map((problemId) => ({
-      playlistId,
+      playListId,
       problemId,
     })),
-    skipDuplicates: true, 
+    skipDuplicates: true,
   });
 
-  if (!problemsInPlaylist) {
-    throw new ApiError(500, "Error while adding problems to playlist");
+  if (problemsInPlaylist.count === 0) {
+    throw new ApiError(400, "No new problems were added to the playlist");
   }
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      problemsInPlaylist,
-      "Added problems successfully to the playlist"
+      { addedCount: problemsInPlaylist.count },
+      "Problems successfully added to the playlist"
     )
   );
 });
 
+
 export const deletePlayList = asyncHandler(async (req, res) => {
-  const { playlistId } = req.params;
-  if (!playlistId) {
+  const { playListId } = req.params;
+  if (!playListId) {
     throw new ApiError(401, "No id provided");
   }
   const existingPlaylist = await db.playlist.findUnique({
     where: {
-      id: playlistId,
+      id: playListId,
     },
   });
 
@@ -110,7 +112,7 @@ export const deletePlayList = asyncHandler(async (req, res) => {
 
   const deletedPlaylist = await db.playlist.delete({
     where: {
-      id: playlistId,
+      id: playListId,
     },
   });
 
@@ -119,10 +121,10 @@ export const deletePlayList = asyncHandler(async (req, res) => {
   )
 });
 export const removeProblemFromPlaylist = asyncHandler(async (req, res) => {
-  const { playlistId } = req.params;
+  const { playListId } = req.params;
   
   const { problemIds } = req.body;
-  if (!playlistId) {
+  if (!playListId) {
     throw new ApiError(401, "No id provided");
   }
 
@@ -132,7 +134,7 @@ export const removeProblemFromPlaylist = asyncHandler(async (req, res) => {
 
   const deletedProblem = await db.problemInPlaylist.deleteMany({
       where: {
-        playlistId,
+        playListId,
         problemId: {
           in: problemIds,
         },

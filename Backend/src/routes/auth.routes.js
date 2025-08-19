@@ -13,7 +13,7 @@ authRoutes.post("/register", register);
 
 authRoutes.post("/login", login);
 
-authRoutes.post("/logout", authMiddleware, logout);
+authRoutes.get("/logout", authMiddleware, logout);
 
 authRoutes.get("/profile", authMiddleware, check);
 
