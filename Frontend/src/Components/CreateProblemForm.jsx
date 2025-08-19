@@ -575,7 +575,9 @@ const CreateProblemForm = () => {
       navigation("/");
       console.log(value);
     } catch (error) {
+      console.log(error)
       console.log(error.message);
+
       toast.error("Error creating problem");
     } finally {
       setIsLoading(false);

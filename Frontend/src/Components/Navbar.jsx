@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import LogoutButton from "./LogoutButton";
-import { LogOut } from "lucide-react";
+import { Code, LogOut } from "lucide-react";
 
 const authLinks = [
   { label: "Home", to: "/" },
@@ -17,9 +17,11 @@ const guestLinks = [
   { label: "About", to: "/about" },
 ];
 
+
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { authUser } = useAuthStore();
+  console.log("name",authUser.name)
 
   const isLoggedIn =
     authUser &&
@@ -55,10 +57,10 @@ const Navbar = () => {
         {/* Right Side */}
         <div className="hidden md:flex items-center gap-3">
           {!isLoggedIn && (
-            <div className="border border-solid border-red-700 rounded-3xl">
+            <div className=" rounded-3xl">
               <Link
-                to="/get-started"
-                className="rounded-full px-5 py-2 text-red-700 hover:bg-red-700 hover:text-white transition-colors"
+                to="/signup"
+                className="inline-block border border-[#455945] rounded-full px-5 py-2 text-[#455945] hover:bg-[#455945] hover:text-white transition-colors"
               >
                 Get Started
               </Link>
@@ -97,6 +99,17 @@ const Navbar = () => {
                 <li className="text-center text-white ml-3 rounded">
                   <Link to="/profile" className="rounded-xl">My Profile</Link>
                 </li>
+                {authUser?.role === "ADMIN" && (
+                <li className="text-center text-white ml-3 rounded">
+                  <Link
+                    to="/add-problem"
+                    className="rounded-xl"
+                  >
+                    <Code className="w-4 h-4 mr-1" />
+                    Add Problem
+                  </Link>
+                </li>
+              )}
                <li>
                 <LogoutButton className="hover:bg-primary hover:text-white">
                   <LogOut className="w-4 h-4 mr-2" />

@@ -45,7 +45,7 @@ const SignUpPage = () => {
 
 
   return (
-    <div className="h-screen bg-[#E1E9C9] grid place-items-center px-4 w-140">
+    <div className="h-screen bg-[#E1E9C9] grid place-items-center text-gray-500 px-4 w-140">
       <div className="bg-[#F6F7EC] w-full max-w-md rounded-xl shadow-xl p-8 space-y-6 border border-[#e6ebd7]">
         {/* Logo */}
         <div className="text-center mb-6">
