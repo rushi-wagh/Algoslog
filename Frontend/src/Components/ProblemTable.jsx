@@ -1,7 +1,14 @@
 import React, { useState, useMemo } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
-import { Bookmark, PencilIcon, TrashIcon, Plus, CheckCircle, Circle } from "lucide-react";
+import {
+  Bookmark,
+  PencilIcon,
+  TrashIcon,
+  Plus,
+  CheckCircle,
+  Circle,
+} from "lucide-react";
 import { useActions } from "../store/useAction";
 import AddToPlaylistModal from "./AddToPlaylist";
 import CreatePlaylistModal from "./CreatePlaylistModal";
@@ -17,8 +24,10 @@ const ProblemsTable = ({ problems }) => {
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
+    useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
+  const [showLoginMsg, setShowLoginMsg] = useState(false);
 
   // Extract unique tags
   const allTags = useMemo(() => {
@@ -73,8 +82,15 @@ const ProblemsTable = ({ problems }) => {
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-extrabold text-gray-800">Problems</h2>
         <button
-          className="px-4 py-2 rounded-xl bg-[#239BA7] hover:bg-orange-700 text-white font-semibold flex items-center gap-2 shadow-md"
-          onClick={() => setIsCreateModalOpen(true)}
+          className="px-4 py-2 rounded-xl bg-[#239BA7] text-white font-semibold flex items-center gap-2 shadow-md"
+          onClick={() => {
+            if (!authUser) {
+              setShowLoginMsg(true);
+              setTimeout(() => setShowLoginMsg(false), 4000);
+              return;
+            }
+            setIsCreateModalOpen(true);
+          }}
         >
           <Plus className="w-5 h-5" />
           Create Playlist
@@ -121,31 +137,28 @@ const ProblemsTable = ({ problems }) => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#CADCAE] text-gray-700 text-sm uppercase">
-              <th className="px-4 py-3">Solved</th>
+              
               <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Tags</th>
               <th className="px-4 py-3">Difficulty</th>
-              <th className="px-4 py-3">Actions</th>
+              {authUser && (<th className="px-4 py-3">Actions</th>)}
             </tr>
           </thead>
           <tbody>
             {paginatedProblems.length > 0 ? (
               paginatedProblems.map((problem) => {
-                const isSolved = problem.solvedBy.some(
-                  (user) => user.userId === authUser?.id
-                );
                 return (
                   <tr
                     key={problem.id}
                     className="hover:bg-[#7ADAA5] transition bg-[#CADCAE]"
                   >
-                    <td className="px-4 py-3">
+                    {/* <td className="px-4 py-3">
                       {isSolved ? (
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       ) : (
                         <Circle className="w-5 h-5 text-gray-400" />
                       )}
-                    </td>
+                    </td> */}
                     <td className="px-4 py-3">
                       <Link
                         to={`/problem/${problem.id}`}
@@ -179,7 +192,7 @@ const ProblemsTable = ({ problems }) => {
                         {problem.difficulty}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    {authUser && (<td className="px-4 py-3">
                       <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
                         {authUser?.role === "ADMIN" && (
                           <div className="flex gap-2">
@@ -197,15 +210,15 @@ const ProblemsTable = ({ problems }) => {
                             </button>
                           </div>
                         )}
-                        <button
-                          className="px-3 py-1 rounded-lg border border-gray-300 hover:bg-gray-100 flex gap-2 items-center bg-orange-500 text-sm font-semibold"
+                        {authUser && (<button
+                          className="px-3 py-1 rounded-lg border border-gray-300  flex gap-2 items-center bg-orange-500 text-sm font-semibold"
                           onClick={() => handleAddToPlaylist(problem.id)}
                         >
                           <Bookmark className="w-4 h-4" />
                           <span className="hidden sm:inline">Save</span>
-                        </button>
+                        </button>)}
                       </div>
-                    </td>
+                    </td>)}
                   </tr>
                 );
               })
@@ -242,16 +255,28 @@ const ProblemsTable = ({ problems }) => {
       </div>
 
       {/* Modals */}
-      <CreatePlaylistModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreatePlaylist}
-      />
-      <AddToPlaylistModal
-        isOpen={isAddToPlaylistModalOpen}
-        onClose={() => setIsAddToPlaylistModalOpen(false)}
-        problemId={selectedProblemId}
-      />
+      {authUser ? (
+        <>
+          <CreatePlaylistModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmit={handleCreatePlaylist}
+          />
+          <AddToPlaylistModal
+            isOpen={isAddToPlaylistModalOpen}
+            onClose={() => setIsAddToPlaylistModalOpen(false)}
+            problemId={selectedProblemId}
+          />
+        </>
+      ) : (
+        showLoginMsg && (
+          <div className="text-center mt-6">
+            <p className="text-[#239BA7] font-semibold border border-[#239BA7] rounded-lg px-4 py-2">
+              Please log in to create or add problems to playlists.
+            </p>
+          </div>
+        )
+      )}
     </div>
   );
 };

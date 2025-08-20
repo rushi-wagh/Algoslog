@@ -17,11 +17,10 @@ const guestLinks = [
   { label: "About", to: "/about" },
 ];
 
-
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { authUser } = useAuthStore();
-  console.log("name",authUser.name)
+  
 
   const isLoggedIn =
     authUser &&
@@ -88,35 +87,34 @@ const Navbar = () => {
                 tabIndex={0}
                 className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
               >
-                 <li className="text-center text-white ml-3 rounded">
-                <p className="rounded-xl text-base font-semibold">
-                 
-                  Hello,{authUser?.name}
+                <li className="text-center text-white ml-3 rounded">
+                  {authUser?.name && (
+                    <p className="rounded-xl text-base font-semibold">
+                      Hello, {authUser?.name}
+                    </p>
+                  )}
 
-                </p>
-                <hr className="border-gray-200/10" />
-              </li>
-                <li className="text-center text-white ml-3 rounded">
-                  <Link to="/profile" className="rounded-xl">My Profile</Link>
+                  <hr className="border-gray-200/10" />
                 </li>
-                {authUser?.role === "ADMIN" && (
                 <li className="text-center text-white ml-3 rounded">
-                  <Link
-                    to="/add-problem"
-                    className="rounded-xl"
-                  >
-                    <Code className="w-4 h-4 mr-1" />
-                    Add Problem
+                  <Link to="/profile" className="rounded-xl">
+                    My Profile
                   </Link>
                 </li>
-              )}
-               <li>
-                <LogoutButton className="hover:bg-primary hover:text-white">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </LogoutButton>
-              </li>
-              
+                {authUser?.role === "ADMIN" && (
+                  <li className="text-center text-white ml-3 rounded">
+                    <Link to="/add-problem" className="rounded-xl">
+                      <Code className="w-4 h-4 mr-1" />
+                      Add Problem
+                    </Link>
+                  </li>
+                )}
+                <li>
+                  <LogoutButton className="hover:bg-primary hover:text-white">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </LogoutButton>
+                </li>
               </ul>
             </div>
           )}
