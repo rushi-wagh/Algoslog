@@ -1,16 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { X, Plus, Loader } from 'lucide-react';
-import { usePlaylistStore } from '../store/usePlaylistStore';
+import React, { useEffect, useState } from "react";
+import { X, Plus, Loader } from "lucide-react";
+import { usePlaylistStore } from "../store/usePlaylistStore";
+import { use } from "react";
 
 const AddToPlaylistModal = ({ isOpen, onClose, problemId }) => {
-  const { playlists, getAllPlaylists, addProblemToPlaylist, isLoading } = usePlaylistStore();
-  const [selectedPlaylist, setSelectedPlaylist] = useState('');
+  const { playlists, getAllPlaylists, addProblemToPlaylist, isLoading } =
+    usePlaylistStore();
+  const [selectedPlaylist, setSelectedPlaylist] = useState("");
 
   useEffect(() => {
     if (isOpen) {
       getAllPlaylists();
     }
-  }, [isOpen]);
+  },[isOpen] );
+
+  
+
+  // if (isLoading) {
+  //   return <h1>Loading</h1>;
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,9 +30,12 @@ const AddToPlaylistModal = ({ isOpen, onClose, problemId }) => {
 
   if (!isOpen) return null;
 
+  console.log("Playlists:", playlists);
+  // playlists.map(playlist => console.log("Playlist:", playlist.id));
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-base-100 rounded-lg shadow-xl w-full max-w-md">
+    <div className="fixed inset-0  flex items-center justify-center z-50">
+      <div className="bg-[#468A9A] rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center p-4 border-b border-base-300">
           <h3 className="text-xl font-bold">Add to Playlist</h3>
           <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
@@ -38,7 +49,7 @@ const AddToPlaylistModal = ({ isOpen, onClose, problemId }) => {
               <span className="label-text font-medium">Select Playlist</span>
             </label>
             <select
-              className="select select-bordered w-full"
+              className="mt-2 select select-bordered w-full bg-[#EEEEEE] text-gray-400"
               value={selectedPlaylist}
               onChange={(e) => setSelectedPlaylist(e.target.value)}
               disabled={isLoading}
@@ -53,15 +64,23 @@ const AddToPlaylistModal = ({ isOpen, onClose, problemId }) => {
           </div>
 
           <div className="flex justify-end gap-2 mt-6">
-            <button type="button" onClick={onClose} className="btn btn-ghost">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn bg-[#239BA7] border rounded-lg "
+            >
               Cancel
             </button>
-            <button 
-              type="submit" 
-              className="btn btn-primary"
+            <button
+              type="submit"
+              className="btn bg-[#239BA7] border rounded-lg"
               disabled={!selectedPlaylist || isLoading}
             >
-              {isLoading ? <Loader className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {isLoading ? (
+                <Loader className="w-4 h-4 animate-spin" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
               Add to Playlist
             </button>
           </div>

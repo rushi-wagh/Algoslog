@@ -14,9 +14,9 @@ const CreatePlaylistModal = ({isOpen , onClose , onSubmit}) => {
 
   return (
    <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-green-50 text-gray-600rounded-lg shadow-xl w-full max-w-md">
+      <div className="  bg-[#a4b38d] bg- text-gray-600 rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center p-4 border-b border-gray-500">
-          <h3 className="text-xl text-gray-500 font-bold">Create New Playlist</h3>
+          <h3 className="text-xl text-gray-900 font-bold">Create New Playlist</h3>
           <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
             <X className="w-5 h-5" />
           </button>
@@ -24,12 +24,12 @@ const CreatePlaylistModal = ({isOpen , onClose , onSubmit}) => {
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-4">
           <div className="form-control">
-            <label className="label text-gray-500 mb-1">
+            <label className="label text-black mb-1">
               <span className="label-text font-medium">Playlist Name</span>
             </label>
             <input
               type="text"
-              className="input bg-gray-200 text-gray-700 input-bordered w-full "
+              className="input bg-[#FFF5F2] text-black input-bordered w-full "
               placeholder="Enter playlist name"
               {...register('name', { required: 'Playlist name is required' })}
             />
@@ -41,11 +41,11 @@ const CreatePlaylistModal = ({isOpen , onClose , onSubmit}) => {
           </div>
 
           <div className="form-control">
-            <label className="label text-gray-500 mb-1">
+            <label className="label text-black mb-1">
               <span className="label-text font-medium">Description</span>
             </label>
             <textarea
-              className="textarea  bg-gray-200 text-gray-700 textarea-bordered h-24"
+              className="textarea  bg-[#FFF5F2] text-black textarea-bordered h-24"
               placeholder="Enter playlist description"
               {...register('description')}
             />

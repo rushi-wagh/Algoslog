@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import {
   Play,
@@ -43,10 +43,23 @@ const ProblemPage = () => {
 
   const { executeCode, submission, isExecuting } = useExecutionStore();
 
+  const calledRef = useRef(false);
+
+  
+
   useEffect(() => {
-    getProblemById(id);
-    getSubmissionCountForProblem(id);
+    if (!calledRef.current) {
+      getProblemById(id);
+      calledRef.current = true;
+    }
+     getSubmissionCountForProblem(id);
   }, [id]);
+
+  useEffect(() => {
+  if (submission && id) {
+    getSubmissionCountForProblem(id);
+  }
+}, [submission, id]);
 
   useEffect(() => {
     if (problem) {
@@ -73,8 +86,6 @@ const ProblemPage = () => {
     setSelectedLanguage(lang);
     setCode(problem.codeSnippets?.[lang] || "");
   };
-  
-
 
   const handleRunCode = (e) => {
     e.preventDefault();
@@ -90,7 +101,7 @@ const ProblemPage = () => {
 
   if (isProblemLoading || !problem) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#B2DAE4]">
+      <div className="flex items-center justify-center h-screen w-full  bg-[#E1E9C9]">
         <div className="bg-white rounded-2xl p-8 shadow-xl">
           <span className="loading loading-spinner loading-lg text-[#5C9EA3]"></span>
           <p className="mt-4 text-gray-600">Loading problem...</p>
@@ -192,7 +203,7 @@ const ProblemPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#B2DAE4] px-4 py-6">
+    <div className="min-h-screen bg-[#E1E9C9] px-4 py-6">
       {/* Navbar */}
       <nav className="bg-white rounded-2xl shadow-md p-4 mb-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -247,9 +258,10 @@ const ProblemPage = () => {
         </div>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+     
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Panel */}
-        <div className="bg-white rounded-2xl shadow-md">
+        <div className="lg:col-span-5 bg-white rounded-2xl shadow-md">
           <div className="border-b flex">
             {["description", "submissions", "discussion", "hints"].map((tab) => {
               const icons = {
@@ -278,14 +290,14 @@ const ProblemPage = () => {
         </div>
 
         {/* Right Panel */}
-        <div className="bg-white rounded-2xl shadow-md flex flex-col">
+        <div className="lg:col-span-7 bg-white rounded-2xl shadow-md flex flex-col">
           <div className="border-b px-4 py-3 flex items-center gap-2 text-[#5C9EA3] font-medium">
             <Terminal className="w-4 h-4" />
             Code Editor
           </div>
           <div className="flex-1">
             <Editor
-              height="600px"
+              height="760px"
               language={selectedLanguage.toLowerCase()}
               theme="vs-dark"
               value={code}
@@ -310,7 +322,7 @@ const ProblemPage = () => {
               {!isExecuting && <Play className="w-4 h-4" />}
               Run Code
             </button>
-            <button className="px-5 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition" >
+            <button className="px-5 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition">
               Submit Solution
             </button>
           </div>
@@ -340,8 +352,12 @@ const ProblemPage = () => {
                       key={index}
                       className="border-t hover:bg-gray-50 transition"
                     >
-                      <td className="px-4 py-2 font-mono text-gray-600">{testCase.input}</td>
-                      <td className="px-4 py-2 font-mono text-gray-600">{testCase.output}</td>
+                      <td className="px-4 py-2 font-mono text-gray-600">
+                        {testCase.input}
+                      </td>
+                      <td className="px-4 py-2 font-mono text-gray-600">
+                        {testCase.output}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
