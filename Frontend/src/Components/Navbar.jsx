@@ -7,7 +7,7 @@ import { Code, LogOut } from "lucide-react";
 const authLinks = [
   { label: "Home", to: "/" },
   { label: "Problems", to: "/problems" },
-  { label: "Pricing", to: "/pricing" },
+  { label: "LeaderBoard", to: "/leaderboard" },
   { label: "About", to: "/about" },
 ];
 

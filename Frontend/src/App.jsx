@@ -13,6 +13,7 @@ import AddProblem from "./page/AddProblem";
 import ProblemPage from "./page/ProblemPage";
 import AdminRoute from "./Components/AdminRoute";
 import ProblemsPage from "./page/ProblemsPage";
+import { About } from "./page/About";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -30,6 +31,7 @@ const App = () => {
   }
 
   return (
+    <>
     <div className="flex flex-col items-center justify-start ">
       <Toaster />
       <Routes>
@@ -70,8 +72,15 @@ const App = () => {
             element={authUser ? <AddProblem /> : <Navigate to="/" />}
           />
         </Route>
+        <Route path="/about" element={<Layout />}>
+          <Route
+            index
+            element={<About/>}
+          />
+        </Route>
       </Routes>
     </div>
+    </>
   );
 };
 
