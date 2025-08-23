@@ -1,41 +1,49 @@
 import { Link } from "react-router-dom";
 import { Twitter, Github, Linkedin } from "lucide-react";
-
+import { HashLink } from "react-router-hash-link";
 
 const menuLinks = [
   { label: "Home", to: "/" },
-  { label: "Features", to: "/features" },
+  { label: "Features", to: "/#features" },
   { label: "About", to: "/about" },
-  { label: "Contact", to: "/contact" }
+  { label: "Contact", to: "/contact" },
 ];
-
-
 
 const Footer = () => {
   return (
     <footer className="bg-[#E1E9C9] text-[#455945] border-t border-gray-300 shadow-inner mt-16">
       <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-3 gap-10">
-        
         {/* Brand / About */}
         <div>
           <h3 className="text-xl font-bold mb-3">ALGOSLOG</h3>
-          
         </div>
 
         {/* Quick Links */}
         <div>
           <h4 className="text-lg font-semibold mb-3">Quick Links</h4>
           <ul className="space-y-2">
-            {menuLinks.map((l) => (
-              <li key={l.label}>
-                <Link
-                  to={l.to}
-                  className="hover:underline hover:text-[#2f3e32] transition-colors"
-                >
-                  {l.label}
-                </Link>
-              </li>
-            ))}
+            <ul className="space-y-2">
+              {menuLinks.map((l) => (
+                <li key={l.label}>
+                  {l.to.includes("#") ? (
+                    <HashLink
+                      smooth
+                      to={l.to}
+                      className="hover:underline hover:text-[#2f3e32] transition-colors"
+                    >
+                      {l.label}
+                    </HashLink>
+                  ) : (
+                    <Link
+                      to={l.to}
+                      className="hover:underline hover:text-[#2f3e32] transition-colors"
+                    >
+                      {l.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
           </ul>
         </div>
 
@@ -76,7 +84,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Bottom Bar */}

@@ -37,7 +37,7 @@ const HomePage = () => {
       </div>
 
       <div className="flex flex-col mt-5">
-        <section className="py-16 bg-[#E1E9C9]">
+        <section className="py-16 bg-[#E1E9C9]" id="features">
           <div className="max-w-6xl mx-auto px-6">
             {/* Section Heading */}
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12">
@@ -45,7 +45,7 @@ const HomePage = () => {
             </h2>
 
             {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10" >
               {/* Card */}
               <div className="flex items-start gap-6 border border-[#455949] bg-[#E1E9C9] rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 h-44">
                 <span className="text-orange-500 text-3xl">🔥</span>

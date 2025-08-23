@@ -14,6 +14,7 @@ import ProblemPage from "./page/ProblemPage";
 import AdminRoute from "./Components/AdminRoute";
 import ProblemsPage from "./page/ProblemsPage";
 import { About } from "./page/About";
+import Profile from "./page/Profile";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -76,6 +77,12 @@ const App = () => {
           <Route
             index
             element={<About/>}
+          />
+        </Route>
+        <Route path="/profile" element={<Layout />}>
+          <Route
+            index
+            element={<Profile/>}
           />
         </Route>
       </Routes>
