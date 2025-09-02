@@ -222,7 +222,7 @@ export const getAllProblems = asyncHandler(async (req, res) => {
         solvedBy:{
           where: {
             userId:req.user.id
-          }
+          },
         
         }
       }

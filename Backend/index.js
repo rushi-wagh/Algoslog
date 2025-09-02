@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { OpenAI } from "openai";
 
 import axios from "axios";
 
@@ -20,6 +21,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8080
+export const client = new OpenAI({
+  baseURL : "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPEN_ROUTER_API_KEY,
+})
 
 app.use(
     cors({

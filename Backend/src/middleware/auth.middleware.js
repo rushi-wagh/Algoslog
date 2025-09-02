@@ -33,6 +33,7 @@ export const authMiddleware = async (req , res , next)=>{
                 role:true
             }
         });
+        console.log("In middlewrae",user)
 
 
         if(!user){
